@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabel Interaktif Kesamaan Rasio - Kelas 6 SD</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            blue: '#0284C7',
+                            purple: '#7C3AED',
+                            green: '#059669',
+                            orange: '#EA580C',
+                            pink: '#DB2777'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f3e8ff 100%);
+            min-height: 100vh;
+        }
+        .font-game {
+            font-family: 'Fredoka', cursive;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .tab-btn.active {
+            background-color: #7C3AED;
+            color: white;
+            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+        }
+    </style>
+</head>
+<body class="text-slate-800 p-3 sm:p-6 flex flex-col justify-between min-h-screen">
+
+    <header class="max-w-6xl mx-auto w-full glass-card rounded-2xl p-4 sm:p-5 mb-6 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-gradient-to-tr from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center text-white text-2xl shadow-md font-game">
+                <i class="fa-solid fa-table-cells"></i>
+            </div>
+            <div>
+                <h1 class="font-game text-xl sm:text-2xl text-slate-800 leading-tight">Tabel Interaktif Kesamaan Rasio</h1>
+                <p class="text-xs sm:text-sm font-semibold text-purple-600">Matematika Kelas 6 SD &bull; Rasio Senilai & Perbandingan</p>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex bg-slate-100 p-1.5 rounded-xl border border-slate-200 w-full sm:w-auto overflow-x-auto text-xs sm:text-sm font-bold">
+            <button onclick="switchTab('tabel')" id="tab-tabel" class="tab-btn active px-4 py-2 rounded-lg transition-all flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-table"></i> Tabel Rasio
+            </button>
+            <button onclick="switchTab('kalkulator')" id="tab-kalkulator" class="tab-btn px-4 py-2 rounded-lg text-slate-600 hover:text-purple-600 transition-all flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-calculator"></i> Generator & Kalkulator
+            </button>
+            <button onclick="switchTab('kuis')" id="tab-kuis" class="tab-btn px-4 py-2 rounded-lg text-slate-600 hover:text-purple-600 transition-all flex items-center gap-2 whitespace-nowrap">
+                <i class="fa-solid fa-brain"></i> Latihan Kuis
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto w-full flex-1">
+
+        <!-- TAB 1: TABEL INTERAKTIF -->
+        <section id="section-tabel" class="space-y-6">
+            <!-- Filter & Search Controls -->
+            <div class="glass-card rounded-2xl p-4 sm:p-5 shadow-md flex flex-wrap items-center justify-between gap-4">
+                <div class="flex-1 min-w-[240px]">
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Cari / Filter Rasio</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-input" onkeyup="filterTable()" placeholder="Ketik rasio (contoh: 1:2 atau 3:4)..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Pengali Kolom (Kelipatan)</label>
+                    <select id="multiplier-count" onchange="renderTable()" class="py-2 px-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm font-semibold bg-white">
+                        <option value="5">Tampilkan 5 Kelipatan</option>
+                        <option value="8" selected>Tampilkan 8 Kelipatan</option>
+                        <option value="10">Tampilkan 10 Kelipatan</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Table Card -->
+            <div class="glass-card rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="ratio-table">
+                        <thead>
+                            <tr id="table-header" class="bg-gradient-to-r from-purple-700 to-indigo-700 text-white font-game text-sm sm:text-base">
+                                <th class="p-3.5 text-center w-12 border-b border-purple-800">#</th>
+                                <th class="p-3.5 border-b border-purple-800">Rasio Dasar (Sederhana)</th>
+                                <!-- Dynamic Multiplier Headers injected by JS -->
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-100 text-xs sm:text-sm">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Visual Bar Explanation Box for Clicked Ratio -->
+            <div id="visual-card" class="glass-card rounded-2xl p-5 shadow-lg border-2 border-purple-200">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-game text-lg text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-column text-purple-600"></i> Visualisasi Balok Rasio: <span id="vis-ratio-title" class="text-purple-700 font-bold">1 : 2</span>
+                    </h3>
+                    <span class="text-xs font-bold text-slate-500 bg-purple-100 px-3 py-1 rounded-full">Klik baris tabel untuk ganti visualisasi</span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <!-- Visual Bars -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-slate-600 mb-1">
+                                <span>Bagian A (Nilai: <span id="vis-val-a">1</span>)</span>
+                                <span id="vis-percent-a" class="text-purple-600">33.3%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-6 rounded-lg overflow-hidden flex">
+                                <div id="bar-a" class="bg-purple-600 h-full transition-all duration-500 flex items-center justify-center text-white text-xs font-bold" style="width: 33.3%;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs font-bold text-slate-600 mb-1">
+                                <span>Bagian B (Nilai: <span id="vis-val-b">2</span>)</span>
+                                <span id="vis-percent-b" class="text-indigo-600">66.7%</span>
+                            </div>
+                            <div class="w-full bg-slate-200 h-6 rounded-lg overflow-hidden flex">
+                                <div id="bar-b" class="bg-indigo-500 h-full transition-all duration-500 flex items-center justify-center text-white text-xs font-bold" style="width: 66.7%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explanation -->
+                    <div class="text-xs sm:text-sm text-slate-600 space-y-2 bg-purple-50/60 p-4 rounded-xl border border-purple-100">
+                        <p class="font-bold text-purple-900"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> Konsep Rasio Senilai:</p>
+                        <p id="vis-explanation">
+                            Rasio <strong>1 : 2</strong> berarti untuk setiap 1 unit Bagian A, terdapat 2 unit Bagian B. Jika dikalikan 2, rasionya menjadi <strong>2 : 4</strong> (nilainya tetap sama/senilai).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-kalkulator" class="space-y-6 hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Custom Generator -->
+                <div class="glass-card rounded-2xl p-5 shadow-lg border border-slate-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-game text-lg text-slate-800">Buat Deret Rasio Sendiri</h3>
+                            <p class="text-xs text-slate-500">Masukkan angka rasio pilihanmu untuk melihat deret senilainya.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nilai A</label>
+                                <input type="number" id="gen-a" value="3" min="1" class="w-full p-2.5 rounded-xl border border-slate-200 font-game text-center text-lg text-purple-700">
+                            </div>
+                            <span class="font-game text-2xl text-slate-400 mt-5">:</span>
+                            <div class="flex-1">
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nilai B</label>
+                                <input type="number" id="gen-b" value="5" min="1" class="w-full p-2.5 rounded-xl border border-slate-200 font-game text-center text-lg text-purple-700">
+                            </div>
+                        </div>
+
+                        <button onclick="generateCustomSeries()" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-game shadow-md transition">
+                            Hasilkan Deret Rasio Senilai
+                        </button>
+
+                        <div id="custom-results" class="space-y-2 pt-2">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Missing Value Calculator -->
+                <div class="glass-card rounded-2xl p-5 shadow-lg border border-slate-200">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-game text-lg text-slate-800">Kalkulator Nilai Rasio Hilang</h3>
+                            <p class="text-xs text-slate-500">Cari nilai $x$ pada perbandingan senilai: $a : b = c : x$</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-5 items-center text-center gap-1">
+                            <input type="number" id="calc-a" value="2" class="p-2 rounded-xl border border-slate-200 font-game text-center text-base text-emerald-700">
+                            <span class="font-game text-xl text-slate-400">:</span>
+                            <input type="number" id="calc-b" value="3" class="p-2 rounded-xl border border-slate-200 font-game text-center text-base text-emerald-700">
+                            <span class="font-game text-xl text-slate-400">=</span>
+                            <input type="number" id="calc-c" value="6" class="p-2 rounded-xl border border-slate-200 font-game text-center text-base text-emerald-700">
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+                            <span class="text-xs text-emerald-800 font-bold uppercase block">Nilai $x$ Yang Dicari:</span>
+                            <span id="calc-result-x" class="font-game text-3xl text-emerald-600">9</span>
+                        </div>
+
+                        <button onclick="calculateMissingValue()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-game shadow-md transition">
+                            Hitung Nilai $x$
+                        </button>
+
+                        <div class="text-xs text-slate-600 bg-white p-3 rounded-xl border border-slate-200">
+                            <strong>Rumus Perkalian Silang:</strong><br>
+                            $x = \frac{b \times c}{a} \rightarrow x = \frac{3 \times 6}{2} = 9$
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="section-kuis" class="glass-card rounded-2xl p-5 sm:p-6 shadow-xl border border-slate-200 hidden">
+            <div class="flex items-center justify-between border-b pb-4 mb-4 border-slate-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-game text-lg text-slate-800">Kuis Kesamaan Rasio</h3>
+                        <p class="text-xs text-slate-500">Uji pemahamanmu tentang rasio senilai!</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-slate-400 font-bold block uppercase">Skor Kuis</span>
+                    <span id="quiz-score" class="font-game text-2xl text-amber-500">0</span>
+                </div>
+            </div>
+
+            <div id="quiz-box" class="max-w-2xl mx-auto py-4 space-y-6">
+                <!-- Injected dynamically by JS -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="max-w-6xl mx-auto w-full text-center py-4 mt-6 text-xs text-slate-500 font-medium">
+        Media Pembelajaran Interaktif Matematika SD Kelas 6 &bull; Rasio Senilai & Perbandingan
+    </footer>
+
+    <script>
+        // Data Rasio Dasar
+        const baseRatios = [
+            { a: 1, b: 2, name: "1 : 2 (Satu banding Dua)" },
+            { a: 1, b: 3, name: "1 : 3 (Satu banding Tiga)" },
+            { a: 1, b: 4, name: "1 : 4 (Satu banding Empat)" },
+            { a: 1, b: 5, name: "1 : 5 (Satu banding Lima)" },
+            { a: 2, b: 3, name: "2 : 3 (Dua banding Tiga)" },
+            { a: 2, b: 5, name: "2 : 5 (Dua banding Lima)" },
+            { a: 3, b: 4, name: "3 : 4 (Tiga banding Empat)" },
+            { a: 3, b: 5, name: "3 : 5 (Tiga banding Lima)" },
+            { a: 4, b: 5, name: "4 : 5 (Empat banding Lima)" },
+            { a: 5, b: 6, name: "5 : 6 (Lima banding Enam)" }
+        ];
+
+        let selectedRatio = baseRatios[0];
+
+        // RENDER TABEL UTAMA
+        function renderTable() {
+            const multCount = parseInt(document.getElementById('multiplier-count').value);
+            const headerRow = document.getElementById('table-header');
+            const tbody = document.getElementById('table-body');
+
+            // Build Header
+            let headerHTML = `
+                <th class="p-3.5 text-center w-12 border-b border-purple-800">#</th>
+                <th class="p-3.5 border-b border-purple-800">Rasio Dasar (×1)</th>
+            `;
+            for (let i = 2; i <= multCount + 1; i++) {
+                headerHTML += `<th class="p-3.5 text-center border-b border-purple-800 bg-purple-800/30">×${i}</th>`;
+            }
+            headerRow.innerHTML = headerHTML;
+
+            // Build Rows
+            tbody.innerHTML = '';
+            baseRatios.forEach((item, index) => {
+                let rowHTML = `
+                    <tr onclick="selectRatioForVisual(${index})" class="hover:bg-purple-50/80 cursor-pointer transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}">
+                        <td class="p-3 text-center font-bold text-slate-400">${index + 1}</td>
+                        <td class="p-3 font-game text-base text-purple-700 font-semibold">${item.a} : ${item.b}</td>
+                `;
+
+                for (let i = 2; i <= multCount + 1; i++) {
+                    const scaledA = item.a * i;
+                    const scaledB = item.b * i;
+                    rowHTML += `<td class="p-3 text-center font-mono font-bold text-slate-700">${scaledA} : ${scaledB}</td>`;
+                }
+
+                rowHTML += `</tr>`;
+                tbody.innerHTML += rowHTML;
+            });
+        }
+
+        // FILTER TABEL
+        function filterTable() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#table-body tr');
+
+            rows.forEach((row, idx) => {
+                const text = row.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // UPDATE VISUALISASI BALOK
+        function selectRatioForVisual(index) {
+            selectedRatio = baseRatios[index];
+            updateVisualCard(selectedRatio.a, selectedRatio.b);
+        }
+
+        function updateVisualCard(a, b) {
+            const total = a + b;
+            const pctA = ((a / total) * 100).toFixed(1);
+            const pctB = ((b / total) * 100).toFixed(1);
+
+            document.getElementById('vis-ratio-title').innerText = `${a} : ${b}`;
+            document.getElementById('vis-val-a').innerText = a;
+            document.getElementById('vis-val-b').innerText = b;
+
+            document.getElementById('vis-percent-a').innerText = `${pctA}%`;
+            document.getElementById('vis-percent-b').innerText = `${pctB}%`;
+
+            document.getElementById('bar-a').style.width = `${pctA}%`;
+            document.getElementById('bar-a').innerText = `${a}`;
+
+            document.getElementById('bar-b').style.width = `${pctB}%`;
+            document.getElementById('bar-b').innerText = `${b}`;
+
+            document.getElementById('vis-explanation').innerHTML = `
+                Rasio <strong>${a} : ${b}</strong> berarti untuk setiap ${a} unit Bagian A, terdapat ${b} unit Bagian B.<br>
+                Contoh Bentuk Senilai: <strong>${a*2} : ${b*2}</strong> (dikali 2), <strong>${a*3} : ${b*3}</strong> (dikali 3), dan <strong>${a*5} : ${b*5}</strong> (dikali 5).
+            `;
+        }
+
+        // GENERATOR DERET SENILAI CUSTOM
+        function generateCustomSeries() {
+            const a = parseInt(document.getElementById('gen-a').value) || 1;
+            const b = parseInt(document.getElementById('gen-b').value) || 1;
+
+            const container = document.getElementById('custom-results');
+            container.innerHTML = `<p class="text-xs font-bold text-slate-500 uppercase mb-2">5 Deret Rasio Senilai Pertama:</p>`;
+
+            let listHTML = `<div class="grid grid-cols-2 sm:grid-cols-5 gap-2">`;
+            for (let i = 1; i <= 5; i++) {
+                listHTML += `
+                    <div class="bg-purple-50 border border-purple-200 p-2.5 rounded-xl text-center">
+                        <span class="text-[10px] text-purple-600 font-bold uppercase block">Dikali ${i}</span>
+                        <span class="font-game text-lg text-purple-900">${a * i} : ${b * i}</span>
+                    </div>
+                `;
+            }
+            listHTML += `</div>`;
+            container.innerHTML += listHTML;
+        }
+
+        // KALKULATOR NILAI HILANG
+        function calculateMissingValue() {
+            const a = parseFloat(document.getElementById('calc-a').value) || 1;
+            const b = parseFloat(document.getElementById('calc-b').value) || 1;
+            const c = parseFloat(document.getElementById('calc-c').value) || 1;
+
+            const x = (b * c) / a;
+            document.getElementById('calc-result-x').innerText = Number.isInteger(x) ? x : x.toFixed(2);
+        }
+
+        // SWITCH TAB
+        function switchTab(tabName) {
+            document.getElementById('section-tabel').classList.add('hidden');
+            document.getElementById('section-kalkulator').classList.add('hidden');
+            document.getElementById('section-kuis').classList.add('hidden');
+
+            document.getElementById('tab-tabel').classList.remove('active');
+            document.getElementById('tab-kalkulator').classList.remove('active');
+            document.getElementById('tab-kuis').classList.remove('active');
+
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            if (tabName === 'kuis' && quizState.questions.length === 0) {
+                initQuiz();
+            }
+        }
+
+        let quizState = {
+            currentIndex: 0,
+            score: 0,
+            questions: []
+        };
+
+        function initQuiz() {
+            quizState.questions = [
+                {
+                    q: "Manakah rasio di bawah ini yang SENILAI dengan 2 : 3?",
+                    options: ["4 : 5", "6 : 9", "4 : 9", "8 : 10"],
+                    answer: 1,
+                    exp: "Rasio 2 : 3 dikalikan 3 pada kedua sisinya menjadi (2×3) : (3×3) = 6 : 9."
+                },
+                {
+                    q: "Jika 3 : 4 = 12 : x, berapakah nilai x?",
+                    options: ["15", "16", "18", "20"],
+                    answer: 1,
+                    exp: "Perkalian silang: x = (4 × 12) ÷ 3 = 48 ÷ 3 = 16."
+                },
+                {
+                    q: "Bentuk paling sederhana dari rasio 15 : 20 adalah...",
+                    options: ["1 : 2", "2 : 3", "3 : 4", "4 : 5"],
+                    answer: 2,
+                    exp: "Membagi kedua angka dengan FPB-nya yaitu 5: (15÷5) : (20÷5) = 3 : 4."
+                },
+                {
+                    q: "Ibu mencampur 2 gelas sirup dengan 5 gelas air. Jika Ibu menggunakan 6 gelas sirup, berapa gelas air yang dibutuhkan?",
+                    options: ["10 gelas", "12 gelas", "15 gelas", "20 gelas"],
+                    answer: 2,
+                    exp: "Sirup naik 3 kali lipat (2 → 6), maka air juga dikali 3: 5 × 3 = 15 gelas."
+                }
+            ];
+
+            quizState.currentIndex = 0;
+            quizState.score = 0;
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const qBox = document.getElementById('quiz-box');
+            document.getElementById('quiz-score').innerText = quizState.score;
+
+            if (quizState.currentIndex >= quizState.questions.length) {
+                qBox.innerHTML = `
+                    <div class="text-center py-8 space-y-4">
+                        <div class="w-20 h-20 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-4xl mx-auto shadow-lg">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h4 class="font-game text-2xl text-slate-800">Kuis Selesai! 🎉</h4>
+                        <p class="text-sm text-slate-600">Skor Akhir Kamu: <strong class="text-amber-600 text-xl font-game">${quizState.score}</strong> dari 100</p>
+                        <button onclick="initQuiz()" class="py-2.5 px-6 bg-purple-600 hover:bg-purple-700 text-white font-game rounded-xl shadow-md transition">
+                            Ulangi Kuis <i class="fa-solid fa-rotate-right ml-1"></i>
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const current = quizState.questions[quizState.currentIndex];
+
+            qBox.innerHTML = `
+                <div class="space-y-4">
+                    <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">Soal ${quizState.currentIndex + 1} dari ${quizState.questions.length}</span>
+                    <h4 class="font-bold text-slate-800 text-base sm:text-lg">${current.q}</h4>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                        ${current.options.map((opt, idx) => `
+                            <button onclick="checkQuizAnswer(${idx})" class="p-3.5 text-left rounded-xl border border-slate-200 hover:border-purple-400 hover:bg-purple-50 font-semibold text-sm transition-all flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs flex items-center justify-center font-bold">${String.fromCharCode(65 + idx)}</span>
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <div id="quiz-feedback" class="hidden p-3.5 rounded-xl text-xs sm:text-sm font-semibold"></div>
+                </div>
+            `;
+        }
+
+        function checkQuizAnswer(selectedIdx) {
+            const current = quizState.questions[quizState.currentIndex];
+            const feedback = document.getElementById('quiz-feedback');
+
+            if (selectedIdx === current.answer) {
+                quizState.score += 25;
+                feedback.className = "p-3.5 rounded-xl text-xs sm:text-sm bg-emerald-50 text-emerald-800 border border-emerald-200 block";
+                feedback.innerHTML = `✅ <strong>Benar!</strong> ${current.exp}`;
+            } else {
+                feedback.className = "p-3.5 rounded-xl text-xs sm:text-sm bg-rose-50 text-rose-800 border border-rose-200 block";
+                feedback.innerHTML = `❌ <strong>Salah!</strong> Jawaban yang benar adalah <strong>${current.options[current.answer]}</strong>.<br>${current.exp}`;
+            }
+
+            setTimeout(() => {
+                quizState.currentIndex++;
+                renderQuizQuestion();
+            }, 2500);
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            renderTable();
+            updateVisualCard(1, 2);
+            generateCustomSeries();
+            calculateMissingValue();
+        };
+    </script>
+</body>
+</html>
